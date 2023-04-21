@@ -7,25 +7,44 @@ using TMPro;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 0;
-    /*public TextMeshProUGUI countText;
-    public GameObject winTextObject;*/
+    public Vector3 initial_pos;
+    public Vector3 checkpoint;
+    public TextMeshProUGUI countText;
+    public GameObject door;
+
+    public GameObject winObject;
 
     private int count;
+    private int total_pickups;
+
     private Rigidbody rb;
     private float movementX;
     private float movementY;
+
+    void ResetPosition(Vector3 pos)
+    {
+        transform.position = pos;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        count = 0;
+        count = 12;
+        total_pickups = GameObject.FindGameObjectsWithTag("PickUp").Length;
 
-        /*SetCountText();
-        winTextObject.SetActive(false);*/
+        checkpoint = new Vector3(2.0f, 0.5f, 16.0f);
+
+        SetCountText();
+        winObject.SetActive(false);
     }
 
-    void OnMove(InputValue movementValue)
+    void Update()
+    {
+        if (transform.position.y < 0) ResetPosition(checkpoint);
+    }
+
+        void OnMove(InputValue movementValue)
     {
         Vector2 movementVector = movementValue.Get<Vector2>();
 
@@ -33,14 +52,14 @@ public class PlayerController : MonoBehaviour
         movementY = movementVector.y;
     }
 
-    /*void SetCountText()
+    void SetCountText()
     {
-        countText.text = "Count: " + count.ToString();
-        if (count >= 12)
+        countText.text = "Collected: " + count.ToString() + "/ " + total_pickups;
+        if (count >= total_pickups)
         {
-            winTextObject.SetActive(true);
+            door.SetActive(false);
         }
-    }*/
+    }
 
     void FixedUpdate()
     {
@@ -54,7 +73,17 @@ public class PlayerController : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             count++;
-            //SetCountText();
+            SetCountText();
         }
+        else if (other.gameObject.CompareTag("Damage"))
+        {
+            ResetPosition(initial_pos);
+        }
+        else if (other.gameObject.CompareTag("Goal"))
+        {
+            winObject.SetActive(true);
+            Time.timeScale = 0;
+        }
+        
     }
 }
