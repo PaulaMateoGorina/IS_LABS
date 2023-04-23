@@ -2,24 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 0;
+    public float init_speed;
     public Vector3 initial_pos;
-    public Vector3 checkpoint;
-    public TextMeshProUGUI countText;
-    public GameObject door;
 
+    public AudioSource pickup_sound;
+    public AudioSource win_sound;
+
+
+    public GameObject door;
+    public TextMeshProUGUI countText;
     public GameObject winObject;
 
+    private float speed;
     private int count;
     private int total_pickups;
+    private Vector3 checkpoint;
 
+    private bool finished;
     private Rigidbody rb;
     private float movementX;
     private float movementY;
+
 
     void ResetPosition(Vector3 pos)
     {
@@ -30,10 +38,16 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        count = 12;
+        rb.isKinematic = false;
+        count = 0;
         total_pickups = GameObject.FindGameObjectsWithTag("PickUp").Length;
 
+        finished = false;
+        speed = init_speed;
         checkpoint = new Vector3(2.0f, 0.5f, 16.0f);
+
+        pickup_sound = pickup_sound.GetComponent<AudioSource>();
+        win_sound = win_sound.GetComponent<AudioSource>();
 
         SetCountText();
         winObject.SetActive(false);
@@ -42,6 +56,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (transform.position.y < 0) ResetPosition(checkpoint);
+        if((finished) && (Input.GetKeyDown(KeyCode.R))){
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+       
     }
 
         void OnMove(InputValue movementValue)
@@ -72,6 +90,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("PickUp"))
         {
             other.gameObject.SetActive(false);
+            pickup_sound.Play();
             count++;
             SetCountText();
         }
@@ -81,8 +100,10 @@ public class PlayerController : MonoBehaviour
         }
         else if (other.gameObject.CompareTag("Goal"))
         {
+            win_sound.Play();
+            finished = true;
+            rb.isKinematic = true;
             winObject.SetActive(true);
-            Time.timeScale = 0;
         }
         
     }
