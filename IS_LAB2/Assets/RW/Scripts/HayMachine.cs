@@ -12,11 +12,16 @@ public class HayMachine : MonoBehaviour
     public float shootInterval; // smallest amount of time between shots
     private float shootTimer; // cooldown between shots
 
+    // get the color it must be
+    public Transform modelParent;
 
-    // Start is called before the first frame update
+    public GameObject blueModelPrefab;
+    public GameObject yellowModelPrefab;
+    public GameObject redModelPrefab;
+
     void Start()
     {
-        
+        LoadModel();
     }
 
     // Update is called once per frame
@@ -25,6 +30,29 @@ public class HayMachine : MonoBehaviour
         UpdateMovement();   
         UpdateShooting();
     }
+
+    private void LoadModel()
+    {
+        // Destroy current model
+        Destroy(modelParent.GetChild(0).gameObject); 
+
+        // Get the new one
+        switch (GameSettings.hayMachineColor) 
+        {
+            case HayMachineColor.Blue:
+                Instantiate(blueModelPrefab, modelParent);
+                break;
+
+            case HayMachineColor.Yellow:
+                Instantiate(yellowModelPrefab, modelParent);
+                break;
+
+            case HayMachineColor.Red:
+                Instantiate(redModelPrefab, modelParent);
+                break;
+        }
+    }
+
 
     private void UpdateMovement()
     {
@@ -56,5 +84,6 @@ public class HayMachine : MonoBehaviour
     private void ShootHay()
     {
         Instantiate(hayBalePrefab, haySpawnpoint.position, Quaternion.identity);
+        SoundManager.Instance.PlayShootClip();
     }
 }

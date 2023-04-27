@@ -23,12 +23,6 @@ public class SheepSpawner : MonoBehaviour
         StartCoroutine(SpawnRoutine());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void SpawnSheep()
     {
         // So that it spawns from one of the spawners in a random way

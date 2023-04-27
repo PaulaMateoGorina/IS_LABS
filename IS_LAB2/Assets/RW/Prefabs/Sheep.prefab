@@ -46,8 +46,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.5, y: 2, z: 4}
-  m_Center: {x: 0, y: 1.4, z: -0.3}
+  m_Size: {x: 3.5, y: 2.5, z: 4}
+  m_Center: {x: 0, y: 1.4, z: 0.15}
 --- !u!54 &5619782954187617834
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -79,6 +79,9 @@ MonoBehaviour:
   runSpeed: 10
   gotHayDestroyDelay: 1
   dropDestroyDelay: 4
+  heartOffset: 0
+  heartPrefab: {fileID: 3335272240325467184, guid: f9663283925bd144cb198f45c3ba0fa9,
+    type: 3}
 --- !u!1001 &5619782952450272812
 PrefabInstance:
   m_ObjectHideFlags: 0
