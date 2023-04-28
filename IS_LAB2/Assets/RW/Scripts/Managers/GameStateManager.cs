@@ -12,16 +12,28 @@ public class GameStateManager : MonoBehaviour
     // Used for public variables completely managed by scripts
     [HideInInspector]
     public int sheepSaved; 
-    
-    [HideInInspector]
-    public int sheepDropped;
+
+    public int sheepBetweenPhases;
+    public int maxPhases;
 
     public int sheepDroppedToFail;
+    public int maxHayAmmo;
+    [HideInInspector]
+    public int hayAmmo;
+    public float timeToReload;
+    
     public SheepSpawner sheepSpawner;
 
+    private int phase;
+    private float spawnTimeDecrease;
+
+    private bool gamePaused;
     void Awake()
     {
-        Instance = this;   
+        Instance = this;  
+        hayAmmo = maxHayAmmo; 
+        phase = 1;
+        gamePaused = false;
     }
 
     void Update()
@@ -30,6 +42,15 @@ public class GameStateManager : MonoBehaviour
         {
             SceneManager.LoadScene("Title");
         }
+        else if(Input.GetKeyDown(KeyCode.R))
+        {   
+            SoundManager.Instance.PlayRealoadClip();
+            Invoke("Reloaded", timeToReload);
+        }
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            ProcessPause();
+        }
     }
     
 
@@ -37,17 +58,53 @@ public class GameStateManager : MonoBehaviour
     {
         sheepSaved++;
         UIManager.Instance.UpdateSheepSaved();
+
+        if(sheepSaved == sheepBetweenPhases * phase)
+        {  
+            if(phase == 1)
+                spawnTimeDecrease = sheepSpawner.timeBetweenSpawns / maxPhases;
+            sheepSpawner.timeBetweenSpawns = Mathf.Max(1.0f, sheepSpawner.timeBetweenSpawns - spawnTimeDecrease);
+        }
+
     }
 
     public void DroppedSheep()
     {
-        sheepDropped++;
+        sheepDroppedToFail--;
         UIManager.Instance.UpdateSheepDropped();
 
-        if (sheepDropped == sheepDroppedToFail)
+        if (sheepDroppedToFail == 0)
         {
             GameOver();
             UIManager.Instance.ShowGameOverWindow();
+        }
+    }
+
+    public void HayShot()
+    {
+        hayAmmo--;
+        UIManager.Instance.UpdateHayAmmo();
+    }
+
+    private void Reloaded()
+    {
+        hayAmmo = maxHayAmmo;
+        UIManager.Instance.UpdateHayAmmo();
+    }
+
+    private void ProcessPause()
+    {
+        if(gamePaused)
+        {
+            Time.timeScale = 1;
+            gamePaused = false;
+            UIManager.Instance.HideGamePausedWindow();
+        }
+        else
+        {
+            Time.timeScale = 0;
+            gamePaused = true;
+            UIManager.Instance.ShowGamePausedWindow();
         }
     }
 

@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
     public AudioClip shootClip;
     public AudioClip sheepHitClip; 
     public AudioClip sheepDroppedClip; 
+    public AudioClip reloadClip; 
 
     private Vector3 cameraPosition; 
 
@@ -45,5 +46,9 @@ public class SoundManager : MonoBehaviour
         PlaySound(sheepDroppedClip);
     }
 
+    public void PlayRealoadClip()
+    {
+        PlaySound(reloadClip);
+    }
 
 }

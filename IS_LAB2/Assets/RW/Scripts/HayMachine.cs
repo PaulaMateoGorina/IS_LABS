@@ -74,16 +74,17 @@ public class HayMachine : MonoBehaviour
 
 
     private void UpdateShooting(){
-    shootTimer -= Time.deltaTime;
-    if(shootTimer <= 0 && Input.GetKey(KeyCode.Space)){
-        shootTimer = shootInterval;
-        ShootHay();
-    }
+        shootTimer -= Time.deltaTime;
+        if(shootTimer <= 0 && Input.GetKey(KeyCode.Space) && GameStateManager.Instance.hayAmmo > 0){
+            shootTimer = shootInterval;
+            ShootHay();
+        }
     }
     
     private void ShootHay()
     {
         Instantiate(hayBalePrefab, haySpawnpoint.position, Quaternion.identity);
         SoundManager.Instance.PlayShootClip();
+        GameStateManager.Instance.HayShot();
     }
 }
